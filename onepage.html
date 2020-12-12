@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <!-- Webpage Title -->
+        <title>액자 쇼핑몰</title>
+
+        <!-- Required meta tags -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+
+        <!-- JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+
+
+        <!-- 구글폰트 -->
+        <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Gugi&display=swap" rel="stylesheet">
+
+        <style type="text/css">
+            * {
+                font-family: 'Gugi', cursive;
+            }
+
+            .wrap {
+                width: 600px;
+                margin: auto;
+            }
+
+            .img {
+                background-image: url('https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20180227_280%2Fncp_1nlu6e_01_1519724114423JLUfT_JPEG%2F5966743323170357_-1000899081.jpg&type=sc960_832');
+                background-size: cover;
+                background-position: center;
+                width: 500px;
+                height: 500px;
+            }
+
+            .info {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            h1, h5 {
+                display: inline;
+            }
+
+            .order {
+                text-align: center;
+            }
+
+            .orders {
+                margin-top: 100px;
+            }
+
+
+        </style>
+
+        <script>
+
+             window.onload = function (){
+                    alert('첫화면 로딩 확인');
+
+
+                 $.ajax({
+                     type: "GET",
+                     url: "https://api.manana.kr/exchange/rate.json",
+                     success: function (response) {
+
+                         for (let i = 0; i < response.length; i++) {
+
+
+                             if (response[i]["name"] == "USDKRW=X") {
+                                 $("#rate").append(response[i]["rate"]);
+
+                             }
+                         }
+                     }
+
+                 })
+
+
+             }
+
+            function order() {
+
+                let name = $("#order-name").val()
+                let count = $("#order-count").val()
+                let address = $("#order-address").val()
+                let phone = $("#order-phone").val()
+
+                if (name == "") {
+                    alert("이름을 입력해주세요");
+                    return;
+                }
+
+                else if (count == "") {
+                    alert("수량을 선택해주세요");
+                    return;
+                }
+
+                else if (address == "") {
+                    alert("주소를 입력해주세요");
+                    return;
+                }
+
+                if (phone.includes('010')) {
+                    alert("주문이 완료되었습니다.");
+                    return;
+                } else  {
+                    alert("번호는 010으로 시작해주세요")
+                }
+
+
+
+
+
+
+              // 여기에 코드를 작성하세요.
+            }
+
+        </script>
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="img"></div>
+            <div class="info">
+                <h1>액자 판매합니다.</h1>
+                <h5>가격: 10,000원/개</h5>
+                <p>특별한 추억이 있는 사진을 액자에 보관하세요.</p>
+                <div>
+                    달러-원 환율 : <p id="rate"></p>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">주문자 이름</span>
+                    </div>
+                    <input type="text" class="form-control" id="order-name">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">수량</label>
+                    </div>
+                    <select class="custom-select" id="order-count">
+                        <option selected value=""> -- 수량을 선택하세요 --</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4개이상 구매시 판매자에게 문의하세요.</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">주소</span>
+                    </div>
+                    <input type="text" class="form-control" id="order-address">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">전화번호</span>
+                    </div>
+                    <input type="text" class="form-control" id="order-phone">
+                </div>
+                <div class="order">
+                    <button onclick="order()" type="button" class="btn btn-primary">주문하기</button>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>

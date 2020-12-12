@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>스파르타 코딩클럽 homework</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+​
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            font-family: 'Anton', sans-serif;
+        }
+
+        .explain {
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+
+        h1, h5 {
+            display: inline;
+        }
+
+        .wrapper {
+            padding: 20px;
+            width: 500px;
+            margin: auto;
+        }
+
+        .img {
+            background-image: url("https://t1.daumcdn.net/liveboard/holapet/0e5f90af436e4c218343073164a5f657.JPG");
+            background-size: cover;
+            background-position: center;
+            width: 400px;
+            height: 400px;
+            border-radius: 10%;
+
+        }
+
+        .order {
+            text-align: center;
+        }
+
+        button {
+            margin-bottom: 20px;
+        }
+
+    </style>
+
+    <script>
+
+        $(document).ready(function () {
+            $('#orders-box').html('');
+            showExchange();
+            showOrders();
+        });
+
+        function order() {
+            let name = $("#order-name").val();
+            let address = $("#order-address").val();
+            let phone = $("#order-phone").val();
+            let count = $("#order-count").val();
+
+            if (name == '') {
+                alert("이름을 입력해주세요.")
+                $("#order-name").focus()
+                return
+            }
+            else if (count == '') {
+                alert('수량을 입력해주세요')
+                $("#order-count").focus()
+                return
+            }
+            else if (phone == '') {
+                alert("핸드폰 번호를 입력하세요")
+                $("#order-phone").focus()
+                return
+            }
+            else if (!isCellPhone(phone)) {
+                alert('휴대폰을 입력하는 형식이 틀립니다. / 010-0000-0000 으로 입력해주세요!')
+                return
+            }
+            else if (address == '') {
+                alert("주소를 입력해주세요")
+                $("#order-address").focus()
+                return
+            }
+
+            $.ajax({
+            type: "POST",
+            url: "/order",
+            data: {name_give: name, count_give: count, phone_give: phone, address_give: address},
+            success: function (response) {
+                if (response['result'] == 'success') {
+                    alert('주문 완료!');
+                    window.location.reload();
+                }
+            }
+        })
+}
+
+        function isCellPhone(p) {
+            p = p.split('-').join('');
+            let regPhone = /^((01[1|6|7|8|9])[1-9]+[0-9]{6,7})|(010[1-9][0-9]{7})$/;
+            return regPhone.test(p);
+        }
+
+        function showOrders() {
+            $.ajax({
+                type: "GET",
+                url: "/order",
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let orders = response['orders'];
+                        for (let i = 0; i < orders.length; i++) {
+                            makeOrderRow(orders[i]['name'], orders[i]['count'], orders[i]['phone'], orders[i]['address'])
+                        }
+                    } else {
+                        alert('주문을 받아오지 못했습니다');
+                    }
+                }
+            })
+        }
+
+        function showExchange() {
+            $.ajax({
+                type: "GET",
+                data: "",
+                url: "https://api.manana.kr/exchange/rate.json",
+                success: function (response) {
+                    for (i = 0; i < response.length; i++) {
+                        if (response[i]["name"] == "USDKRW=X") {
+                            $("#dollor").text(response[i]["rate"]);
+                            return
+                        }
+                    }
+                }
+            })
+        }
+
+        function makeOrderRow(name, count, phone, address) {
+            let tempHtml = `<tr>\
+                                <td>${name}</td>
+                                <td>${count}</td>
+                                <td>${phone}</td>
+                                <td>${address}</td>
+                              </tr>`;
+
+            $('#orders-box').append(tempHtml);
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <div class="img"></div>
+    <header>
+        <div class="explain">
+            <h1> 우리집 강얼쥐 </h1>
+            <h5>가격:500,000만원 (사료 값)</h5>
+        </div>
+        <p>
+            이 상품으로 말할 것 같으면, 말도 지지리 안듣고 지멋대로 사는 우리 강아지.. 보내주려고 합니다.
+            이름은 아지고, 성은 강이에요. <br>취미는 물어뜯기, 짖기입니다. 50만원은 그 동안 먹인 사료값이니 생각이 있으면 연락주세요.
+
+        </p>
+        <div>
+            달러 원 환율 :
+            <span id="dollor"></span>
+        </div>
+    </header>
+
+    <section>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">주문자 이름</span>
+            </div>
+            <input type="text" class="form-control" id="order-name" aria-describedby="basic-addon3">
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend" style="margin-bottom: 20px;">
+                <label class="input-group-text" for="order-count">수량</label>
+            </div>
+            <select class="custom-select" id="order-count">
+                <option selected>수량을 선택하세요 ..( 선택지는 하나 )</option>
+                <option value="1">1</option>
+                <option value="2">x</option>
+                <option value="3">x..</option>
+            </select>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">전화번호</span>
+                </div>
+                <input type="text" class="form-control" id="order-phone" aria-describedby="basic-addon3">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon3">주소</span>
+                </div>
+                <input type="text" class="form-control" id="order-address" aria-describedby="basic-addon3">
+            </div>
+    </section>
+
+    <div class="order">
+        <button type="button" onclick="order()" class="btn btn-primary">주문하기</button>
+    </div>
+
+    <div class="orders">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">이름</th>
+                <th scope="col">수량</th>
+                <th scope="col">번호</th>
+                <th scope="col">주소</th>
+            </tr>
+            <thead>
+
+            <tbody id="orders-box">
+
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+
+</body>
+</html>
